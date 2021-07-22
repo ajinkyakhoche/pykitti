@@ -24,9 +24,12 @@ class odometry:
 
     def __init__(self, base_path, sequence, **kwargs):
         """Set the path."""
+        self.base_path = base_path
         self.sequence = sequence
-        self.sequence_path = os.path.join(base_path, 'sequences', sequence)
-        self.pose_path = os.path.join(base_path, 'poses')
+        # self.sequence_path = os.path.join(base_path, 'sequences', sequence)
+        # self.pose_path = os.path.join(base_path, 'poses')
+        self.pose_path = os.path.join(base_path, 'data_odometry_poses', 
+                            'dataset', 'poses')
         self.frames = kwargs.get('frames', None)
 
         # Default image file extension is 'png'
@@ -113,21 +116,41 @@ class odometry:
 
     def _get_file_lists(self):
         """Find and list data files for each sensor."""
+        # self.cam0_files = sorted(glob.glob(
+        #     os.path.join(self.sequence_path, 'image_0',
+        #                  '*.{}'.format(self.imtype))))
         self.cam0_files = sorted(glob.glob(
-            os.path.join(self.sequence_path, 'image_0',
-                         '*.{}'.format(self.imtype))))
+            os.path.join(self.base_path, 'data_odometry_gray',
+                         'dataset', 'sequences', self.sequence,
+                         'image_0', '*.{}'.format(self.imtype))))
+        # self.cam1_files = sorted(glob.glob(
+        #     os.path.join(self.sequence_path, 'image_1',
+        #                  '*.{}'.format(self.imtype))))
         self.cam1_files = sorted(glob.glob(
-            os.path.join(self.sequence_path, 'image_1',
-                         '*.{}'.format(self.imtype))))
+            os.path.join(self.base_path, 'data_odometry_gray',
+                         'dataset', 'sequences', self.sequence,
+                         'image_1', '*.{}'.format(self.imtype))))
+        # self.cam2_files = sorted(glob.glob(
+        #     os.path.join(self.sequence_path, 'image_2',
+        #                  '*.{}'.format(self.imtype))))
         self.cam2_files = sorted(glob.glob(
-            os.path.join(self.sequence_path, 'image_2',
-                         '*.{}'.format(self.imtype))))
+            os.path.join(self.base_path, 'data_odometry_color',
+                         'dataset', 'sequences', self.sequence,
+                         'image_2', '*.{}'.format(self.imtype))))
+        # self.cam3_files = sorted(glob.glob(
+        #     os.path.join(self.sequence_path, 'image_3',
+        #                  '*.{}'.format(self.imtype))))
         self.cam3_files = sorted(glob.glob(
-            os.path.join(self.sequence_path, 'image_3',
-                         '*.{}'.format(self.imtype))))
+            os.path.join(self.base_path, 'data_odometry_color',
+                         'dataset', 'sequences', self.sequence,
+                         'image_3', '*.{}'.format(self.imtype))))
+        # self.velo_files = sorted(glob.glob(
+        #     os.path.join(self.sequence_path, 'velodyne',
+        #                  '*.bin')))
         self.velo_files = sorted(glob.glob(
-            os.path.join(self.sequence_path, 'velodyne',
-                         '*.bin')))
+            os.path.join(self.base_path, 'data_odometry_velodyne',
+                         'dataset', 'sequences', self.sequence,
+                         'velodyne', '*.bin')))
 
         # Subselect the chosen range of frames, if any
         if self.frames is not None:
@@ -149,7 +172,9 @@ class odometry:
         data = {}
 
         # Load the calibration file
-        calib_filepath = os.path.join(self.sequence_path, 'calib.txt')
+        # calib_filepath = os.path.join(self.sequence_path, 'calib.txt')
+        calib_filepath = os.path.join(self.base_path, 'data_odometry_calib', 
+                    'dataset', 'sequences', self.sequence, 'calib.txt')
         filedata = utils.read_calib_file(calib_filepath)
 
         # Create 3x4 projection matrices
@@ -200,8 +225,9 @@ class odometry:
 
     def _load_timestamps(self):
         """Load timestamps from file."""
-        timestamp_file = os.path.join(self.sequence_path, 'times.txt')
-
+        # timestamp_file = os.path.join(self.sequence_path, 'times.txt')
+        timestamp_file = os.path.join(self.base_path, 'data_odometry_calib', 
+                    'dataset', 'sequences', self.sequence, 'times.txt')
         # Read and parse the timestamps
         self.timestamps = []
         with open(timestamp_file, 'r') as f:
